@@ -1,5 +1,8 @@
 import express from "express";
-import { v4 as uuidv4 } from "uuid";
+
+import { createUser } from "./controllers/user.controller.js";
+import { createDocument, listDocuments } from "./controllers/document.controller.js";
+import { listLogs } from "./controllers/logs.controller.js";
 
 const app = express();
 app.use(express.json());
@@ -7,14 +10,18 @@ app.use(express.json());
 const PORT = 3001;
 
 /**
- * Estructuras en memoria (solo para evidencia técnica)
+ * Salud del servicio
  */
-let users = [];
-let documents = [];
-let logs = [];
+app.get("/health", (req, res) => {
+  res.json({
+    ok: true,
+    service: "PKF Digital Security Platform",
+    version: "1.0.0"
+  });
+});
 
 /**
- * Endpoint raíz
+ * Endpoint raíz (info básica)
  */
 app.get("/", (req, res) => {
   res.json({
@@ -24,63 +31,20 @@ app.get("/", (req, res) => {
 });
 
 /**
- * Crear usuario
+ * Usuarios
  */
-app.post("/users", (req, res) => {
-  const { name, role } = req.body;
-
-  const newUser = {
-    id: uuidv4(),
-    name,
-    role,
-    createdAt: new Date()
-  };
-
-  users.push(newUser);
-
-  logs.push({
-    id: uuidv4(),
-    action: "CREATE_USER",
-    user: name,
-    timestamp: new Date()
-  });
-
-  res.status(201).json(newUser);
-});
+app.post("/users", createUser);
 
 /**
- * Registrar documento
+ * Documentos
  */
-app.post("/documents", (req, res) => {
-  const { title, createdBy } = req.body;
-
-  const newDocument = {
-    id: uuidv4(),
-    title,
-    version: 1,
-    createdBy,
-    createdAt: new Date()
-  };
-
-  documents.push(newDocument);
-
-  logs.push({
-    id: uuidv4(),
-    action: "CREATE_DOCUMENT",
-    document: title,
-    user: createdBy,
-    timestamp: new Date()
-  });
-
-  res.status(201).json(newDocument);
-});
+app.post("/documents", createDocument);
+app.get("/documents", listDocuments);
 
 /**
- * Consultar bitácora
+ * Bitácora (auditoría)
  */
-app.get("/logs", (req, res) => {
-  res.json(logs);
-});
+app.get("/logs", listLogs);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
