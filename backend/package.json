@@ -1,0 +1,14 @@
+{
+  "name": "pkf-digital-security-platform",
+  "version": "1.0.0",
+  "description": "Sistema de gestión y seguridad documental con trazabilidad y auditoría.",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "uuid": "^9.0.0"
+  }
+}
